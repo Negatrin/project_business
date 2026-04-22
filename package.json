@@ -1,0 +1,52 @@
+{
+  "name": "sensai-freelance",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx lib/db/seed.ts",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "next": "14.2.20",
+    "react": "^18",
+    "react-dom": "^18",
+    "next-intl": "^3.15.3",
+    "next-auth": "5.0.0-beta.19",
+    "@neondatabase/serverless": "^0.9.4",
+    "drizzle-orm": "^0.31.2",
+    "pusher": "^5.2.0",
+    "pusher-js": "^8.4.0-rc2",
+    "@vercel/blob": "^0.23.4",
+    "zod": "^3.23.8",
+    "bcryptjs": "^2.4.3",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.3.0",
+    "lucide-react": "^0.395.0",
+    "date-fns": "^3.6.0",
+    "react-hook-form": "^7.52.1",
+    "@hookform/resolvers": "^3.6.0",
+    "sharp": "^0.33.4"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/bcryptjs": "^2.4.6",
+    "tailwindcss": "^3.4.4",
+    "postcss": "^8",
+    "autoprefixer": "^10.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.20",
+    "drizzle-kit": "^0.22.7",
+    "tsx": "^4.15.7",
+    "dotenv": "^16.4.5"
+  }
+}
