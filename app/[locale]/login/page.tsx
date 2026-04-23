@@ -39,7 +39,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href={`/${locale}`} className="text-3xl font-extrabold text-[#1dbf73]">SensAi</Link>
+          <Link href={`/${locale}`} className="text-3xl font-extrabold text-[#1dbf73]">Marketplace</Link>
           <h1 className="mt-3 text-2xl font-bold text-gray-900">{t('loginTitle')}</h1>
           <p className="mt-1 text-gray-500">{t('loginSubtitle')}</p>
         </div>

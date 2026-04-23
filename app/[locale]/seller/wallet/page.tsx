@@ -60,7 +60,7 @@ export default async function WalletPage({ params: { locale } }: PageProps) {
           <div>
             <h3 className="font-semibold text-green-900">How Platform Commission Works</h3>
             <p className="mt-1 text-sm text-green-800">
-              SensAi charges a <strong>{commissionRate}%</strong> commission on each completed order.
+              Marketplace charges a <strong>{commissionRate}%</strong> commission on each completed order.
               This covers payment processing, fraud protection, and platform support.
               For a PKR 10,000 order: you keep <strong>PKR 8,000</strong>.
             </p>
@@ -85,7 +85,7 @@ export default async function WalletPage({ params: { locale } }: PageProps) {
                   </Tooltip>
                 </th>
                 <th className="px-5 py-3 text-end hidden sm:table-cell">
-                  <Tooltip content={`${commissionRate}% deducted by SensAi`}>
+                  <Tooltip content={`${commissionRate}% deducted by Marketplace`}>
                     <span className="flex items-center justify-end gap-1 cursor-help text-red-600">
                       {t('commission')} <Info className="h-3 w-3" />
                     </span>

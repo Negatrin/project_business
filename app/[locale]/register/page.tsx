@@ -49,7 +49,7 @@ export default function RegisterPage() {
     <div className="flex min-h-[80vh] items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href={`/${locale}`} className="text-3xl font-extrabold text-[#1dbf73]">SensAi</Link>
+          <Link href={`/${locale}`} className="text-3xl font-extrabold text-[#1dbf73]">Marketplace</Link>
           <h1 className="mt-3 text-2xl font-bold text-gray-900">{t('registerTitle')}</h1>
           <p className="mt-1 text-gray-500">{t('registerSubtitle')}</p>
         </div>

@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import { getPusherClient } from '@/lib/pusher-client'
 import { Avatar } from '@/components/ui/avatar'
 import { Send, Paperclip } from 'lucide-react'
 import { timeAgo } from '@/lib/utils'
@@ -27,27 +26,48 @@ const INITIAL_MESSAGES: Message[] = [
   { id: '3', senderId: 'u1', senderName: 'Ahmed Raza', content: 'Perfect! I will get started right away and deliver the first draft within 24 hours.', createdAt: new Date(Date.now() - 900000).toISOString() },
 ]
 
+const pusherAvailable =
+  typeof process !== 'undefined' &&
+  !!process.env.NEXT_PUBLIC_PUSHER_KEY &&
+  process.env.NEXT_PUBLIC_PUSHER_KEY.trim() !== ''
+
 export function ChatWindow({ orderId, currentUserId, currentUserName, otherUserName }: ChatWindowProps) {
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES)
   const [input, setInput] = useState('')
+  const [sending, setSending] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  // Only connect to Pusher if credentials are available
   useEffect(() => {
-    const pusher = getPusherClient()
-    const channel = pusher.subscribe(`order-${orderId}`)
-    channel.bind('new-message', (data: Message) => {
-      setMessages((prev) => [...prev, data])
-    })
-    return () => { pusher.unsubscribe(`order-${orderId}`) }
+    if (!pusherAvailable) return
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let channel: any = null
+
+    async function setupPusher() {
+      const { getPusherClient } = await import('@/lib/pusher-client')
+      const pusher = getPusherClient()
+      channel = pusher.subscribe(`order-${orderId}`)
+      channel.bind('new-message', (data: Message) => {
+        setMessages((prev) => [...prev, data])
+      })
+    }
+
+    setupPusher().catch(() => {})
+
+    return () => {
+      channel?.unbind_all()
+    }
   }, [orderId])
 
   async function sendMessage(e: React.FormEvent) {
     e.preventDefault()
-    if (!input.trim()) return
+    if (!input.trim() || sending) return
+
     const msg: Message = {
       id: Date.now().toString(),
       senderId: currentUserId,
@@ -55,14 +75,22 @@ export function ChatWindow({ orderId, currentUserId, currentUserName, otherUserN
       content: input.trim(),
       createdAt: new Date().toISOString(),
     }
+
     setMessages((prev) => [...prev, msg])
     setInput('')
+    setSending(true)
 
-    await fetch('/api/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ orderId, content: input.trim() }),
-    }).catch(() => {})
+    try {
+      await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, content: msg.content }),
+      })
+    } catch {
+      // Message shown locally even if server call fails
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -92,6 +120,12 @@ export function ChatWindow({ orderId, currentUserId, currentUserName, otherUserN
         <div ref={bottomRef} />
       </div>
 
+      {!pusherAvailable && (
+        <div className="border-t border-gray-100 bg-amber-50 px-4 py-2 text-center text-xs text-amber-700">
+          Real-time chat requires Pusher credentials. Messages are shown locally only.
+        </div>
+      )}
+
       {/* Input */}
       <form onSubmit={sendMessage} className="border-t border-gray-200 p-3 flex items-center gap-2">
         <button type="button" className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
@@ -105,7 +139,7 @@ export function ChatWindow({ orderId, currentUserId, currentUserName, otherUserN
         />
         <button
           type="submit"
-          disabled={!input.trim()}
+          disabled={!input.trim() || sending}
           className="rounded-full bg-[#1dbf73] p-2.5 text-white transition-colors hover:bg-[#19a864] disabled:opacity-40"
         >
           <Send className="h-4 w-4" />

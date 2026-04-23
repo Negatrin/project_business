@@ -1,7 +1,8 @@
 import { getTranslations } from 'next-intl/server'
 import { GigCard } from '@/components/gigs/GigCard'
 import { SAMPLE_GIGS, CATEGORIES } from '@/lib/utils'
-import { SlidersHorizontal, ChevronDown } from 'lucide-react'
+import { SortSelect } from '@/components/search/SortSelect'
+import { SlidersHorizontal } from 'lucide-react'
 
 interface SearchPageProps {
   params: { locale: string }
@@ -95,28 +96,16 @@ export default async function SearchPage({ params: { locale }, searchParams }: S
             <span className="text-sm text-gray-500">{gigs.length} services available</span>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">{t('sortBy')}:</span>
-              <form>
-                <input type="hidden" name="q" value={q ?? ''} />
-                <input type="hidden" name="category" value={category ?? ''} />
-                <div className="relative">
-                  <select
-                    name="sort"
-                    defaultValue={sort ?? 'relevant'}
-                    onChange={(e) => {
-                      const form = e.target.closest('form')
-                      if (form) form.submit()
-                    }}
-                    className="appearance-none rounded-lg border border-gray-200 bg-white pe-7 ps-3 py-1.5 text-sm focus:outline-none"
-                  >
-                    <option value="relevant">{t('relevant')}</option>
-                    <option value="bestSelling">{t('bestSelling')}</option>
-                    <option value="newest">{t('newest')}</option>
-                    <option value="lowToHigh">{t('lowToHigh')}</option>
-                    <option value="highToLow">{t('highToLow')}</option>
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute inset-y-0 end-2 my-auto h-4 w-4 text-gray-400" />
-                </div>
-              </form>
+              <SortSelect
+                currentSort={sort ?? 'relevant'}
+                options={[
+                  { value: 'relevant', label: t('relevant') },
+                  { value: 'bestSelling', label: t('bestSelling') },
+                  { value: 'newest', label: t('newest') },
+                  { value: 'lowToHigh', label: t('lowToHigh') },
+                  { value: 'highToLow', label: t('highToLow') },
+                ]}
+              />
             </div>
           </div>
 

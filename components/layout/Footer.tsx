@@ -13,7 +13,7 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <span className="text-2xl font-extrabold text-[#1dbf73]">SensAi</span>
+            <span className="text-2xl font-extrabold text-[#1dbf73]">Marketplace</span>
             <p className="mt-2 text-sm text-gray-500">{t('tagline')}</p>
             <p className="mt-4 text-xs text-gray-400">🇵🇰 {t('madeIn')}</p>
           </div>

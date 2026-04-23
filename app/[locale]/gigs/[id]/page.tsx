@@ -6,9 +6,8 @@ import { SAMPLE_GIGS } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { StarRating } from '@/components/ui/star-rating'
-import { Button } from '@/components/ui/button'
-import { Tooltip } from '@/components/ui/tooltip'
-import { ShieldCheck, Clock, RefreshCw, CheckCircle2, Info, ChevronRight } from 'lucide-react'
+import { GigPricingCard } from '@/components/gigs/GigPricingCard'
+import { ShieldCheck, CheckCircle2, ChevronRight } from 'lucide-react'
 
 interface GigPageProps {
   params: { locale: string; id: string }
@@ -135,68 +134,22 @@ export default async function GigPage({ params: { locale, id } }: GigPageProps) 
           </div>
         </div>
 
-        {/* Right: Pricing card */}
+        {/* Right: Interactive pricing card */}
         <div className="w-full lg:w-80 xl:w-96">
-          <div className="sticky top-24 rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
-            {/* Tier tabs */}
-            <div className="grid grid-cols-3 border-b border-gray-200">
-              {tiers.map((tier, i) => (
-                <button key={tier.key} className={`py-3 text-sm font-semibold transition-colors ${i === 0 ? 'bg-[#1dbf73] text-white' : 'text-gray-600 hover:bg-gray-50'}`}>
-                  {tier.title}
-                </button>
-              ))}
-            </div>
-
-            {/* Pricing detail — shows Basic by default */}
-            <div className="p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="font-semibold text-gray-900">{tiers[0].title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Core deliverables included</p>
-                </div>
-                <p className="text-2xl font-extrabold text-gray-900">
-                  PKR {tiers[0].price.toLocaleString('en-PK')}
-                </p>
-              </div>
-
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Clock className="h-4 w-4 text-gray-400" />
-                  <span>{tiers[0].days} {t('days')} {t('deliveryTime')}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <RefreshCw className="h-4 w-4 text-gray-400" />
-                  <span>{tiers[0].revisions} {t('revisions')}</span>
-                </div>
-              </div>
-
-              {/* Commission tooltip */}
-              <div className="mt-4 rounded-lg bg-gray-50 p-3 flex items-start gap-2">
-                <Info className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-                <p className="text-xs text-gray-500">
-                  A 5% service fee applies at checkout. The seller receives 80% after a 20% platform commission.
-                </p>
-              </div>
-
-              <Link href={`/${locale}/checkout/${gig.id}?tier=1`} className="mt-5 block">
-                <Button size="lg" className="w-full">{t('orderNow')}</Button>
-              </Link>
-              <Link href={`/${locale}/inbox`} className="mt-2 block">
-                <Button size="lg" variant="outline" className="w-full">{t('contactSeller')}</Button>
-              </Link>
-            </div>
-
-            {/* All 3 tiers quick view */}
-            <div className="border-t border-gray-100 px-5 py-4">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">{t('pricing')}</p>
-              {tiers.map((tier) => (
-                <div key={tier.key} className="flex items-center justify-between py-1.5 text-sm">
-                  <span className="text-gray-700">{tier.title}</span>
-                  <span className="font-semibold text-gray-900">PKR {tier.price.toLocaleString('en-PK')}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <GigPricingCard
+            tiers={tiers}
+            gigId={gig.id}
+            locale={locale}
+            labels={{
+              orderNow: t('orderNow'),
+              contactSeller: t('contactSeller'),
+              deliveryTime: t('deliveryTime'),
+              revisions: t('revisions'),
+              days: t('days'),
+              unlimited: t('unlimited'),
+              pricing: t('pricing'),
+            }}
+          />
         </div>
       </div>
     </div>

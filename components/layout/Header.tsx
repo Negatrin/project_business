@@ -32,7 +32,7 @@ export function Header({ user }: HeaderProps) {
 
         {/* Logo */}
         <Link href={`/${locale}`} className="flex-shrink-0 text-2xl font-extrabold text-[#1dbf73]">
-          SensAi
+          Marketplace
         </Link>
 
         {/* Search bar — hidden on mobile */}
