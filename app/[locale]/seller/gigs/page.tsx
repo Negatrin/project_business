@@ -1,6 +1,9 @@
 import { getTranslations } from 'next-intl/server'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
+import { db } from '@/lib/db'
+import { gigs } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { StarRating } from '@/components/ui/star-rating'
@@ -9,17 +12,17 @@ import { Plus, Edit, Pause, Trash2, Megaphone } from 'lucide-react'
 
 interface PageProps { params: { locale: string } }
 
-const MY_GIGS = [
-  { id: '1', title: 'Professional Logo Design for Your Business', category: 'design', status: 'active', orders: 342, rating: 4.9, reviews: 127, tier1Price: 2500, isSponsored: true },
-  { id: '3', title: 'SEO-Optimized Urdu & English Content Writing', category: 'writing', status: 'active', orders: 119, rating: 4.7, reviews: 54, tier1Price: 1500, isSponsored: false },
-  { id: 'g3', title: 'Social Media Management & Content Strategy', category: 'social', status: 'paused', orders: 28, rating: 4.6, reviews: 12, tier1Price: 5000, isSponsored: false },
-]
-
 export default async function MyGigsPage({ params: { locale } }: PageProps) {
   const session = await auth()
   if (!session) redirect(`/${locale}/login`)
 
   const t = await getTranslations('seller')
+
+  const myGigs = await db
+    .select()
+    .from(gigs)
+    .where(eq(gigs.sellerId, session.user.id))
+    .orderBy(gigs.createdAt)
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
@@ -33,7 +36,7 @@ export default async function MyGigsPage({ params: { locale } }: PageProps) {
         </Link>
       </div>
 
-      {MY_GIGS.length === 0 ? (
+      {myGigs.length === 0 ? (
         <div className="py-20 text-center">
           <p className="text-5xl mb-4">🎨</p>
           <h2 className="text-xl font-bold text-gray-900">{t('noGigs')}</h2>
@@ -56,7 +59,7 @@ export default async function MyGigsPage({ params: { locale } }: PageProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {MY_GIGS.map((gig) => (
+              {myGigs.map((gig) => (
                 <tr key={gig.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-5 py-4">
                     <div>
@@ -66,9 +69,9 @@ export default async function MyGigsPage({ params: { locale } }: PageProps) {
                       {gig.isSponsored && <Badge variant="sponsored" className="mt-1">Sponsored</Badge>}
                     </div>
                   </td>
-                  <td className="px-5 py-4 hidden md:table-cell text-sm text-gray-600">{gig.orders}</td>
+                  <td className="px-5 py-4 hidden md:table-cell text-sm text-gray-600">{gig.totalOrders}</td>
                   <td className="px-5 py-4 hidden sm:table-cell">
-                    <StarRating rating={gig.rating} count={gig.reviews} />
+                    <StarRating rating={parseFloat(String(gig.avgRating ?? 0))} count={gig.totalReviews ?? 0} />
                   </td>
                   <td className="px-5 py-4">
                     <Badge variant={gig.status === 'active' ? 'green' : 'yellow'}>

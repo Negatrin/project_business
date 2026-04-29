@@ -5,14 +5,14 @@ import { gigs, wallets } from '@/lib/db/schema'
 import { z } from 'zod'
 
 const createGigSchema = z.object({
-  title: z.string().min(15),
+  title: z.string().min(5, 'Title must be at least 5 characters'),
   category: z.string(),
-  description: z.string().min(50),
-  tier1Title: z.string(), tier1Desc: z.string(), tier1Price: z.number().min(500),
+  description: z.string().min(10, 'Description must be at least 10 characters'),
+  tier1Title: z.string().min(1), tier1Desc: z.string(), tier1Price: z.number().min(1),
   tier1Days: z.number().min(1), tier1Rev: z.number(),
-  tier2Title: z.string(), tier2Desc: z.string(), tier2Price: z.number().min(500),
+  tier2Title: z.string().min(1), tier2Desc: z.string(), tier2Price: z.number().min(1),
   tier2Days: z.number().min(1), tier2Rev: z.number(),
-  tier3Title: z.string(), tier3Desc: z.string(), tier3Price: z.number().min(500),
+  tier3Title: z.string().min(1), tier3Desc: z.string(), tier3Price: z.number().min(1),
   tier3Days: z.number().min(1), tier3Rev: z.number(),
 })
 

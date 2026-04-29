@@ -16,6 +16,7 @@ export default function CreateGigPage() {
 
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const [form, setForm] = useState({
     title: '', category: 'design', description: '',
     tier1Title: 'Basic', tier1Desc: '', tier1Price: 2500, tier1Days: 3, tier1Rev: 1,
@@ -26,16 +27,24 @@ export default function CreateGigPage() {
   function update(k: string, v: string | number) { setForm((f) => ({ ...f, [k]: v })) }
 
   async function publish() {
+    setError('')
+    if (form.title.length < 5) { setError('Title must be at least 5 characters.'); return }
+    if (form.description.length < 10) { setError('Description must be at least 10 characters.'); return }
     setLoading(true)
-    const res = await fetch('/api/gigs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    })
-    setLoading(false)
-    if (res.ok) {
+    try {
+      const res = await fetch('/api/gigs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
       const data = await res.json()
-      router.push(`/${locale}/gigs/${data.id}`)
+      if (!res.ok) { setError(data.error ?? 'Failed to publish gig.'); return }
+      router.push(`/${locale}/seller/gigs`)
+      router.refresh()
+    } catch {
+      setError('Network error. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -129,9 +138,11 @@ export default function CreateGigPage() {
           <div className="text-5xl">🎉</div>
           <h2 className="text-xl font-bold text-gray-900">Ready to Publish!</h2>
           <p className="text-gray-500 text-sm">Your gig <strong>"{form.title}"</strong> is ready to go live. It will be visible to thousands of buyers.</p>
+          {error && (
+            <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">{error}</div>
+          )}
           <div className="flex gap-3 justify-center">
-            <Button variant="outline" onClick={() => setStep(2)}>Back</Button>
-            <Button variant="ghost" onClick={publish} loading={loading}>{t('saveDraft')}</Button>
+            <Button variant="outline" onClick={() => setStep(2)} disabled={loading}>Back</Button>
             <Button onClick={publish} loading={loading}>{t('publish')}</Button>
           </div>
         </div>

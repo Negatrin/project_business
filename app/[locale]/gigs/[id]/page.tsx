@@ -3,6 +3,9 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { SAMPLE_GIGS } from '@/lib/utils'
+import { db } from '@/lib/db'
+import { gigs, users } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { StarRating } from '@/components/ui/star-rating'
@@ -14,7 +17,37 @@ interface GigPageProps {
 }
 
 export default async function GigPage({ params: { locale, id } }: GigPageProps) {
-  const gig = SAMPLE_GIGS.find((g) => g.id === id)
+  const sampleGig = SAMPLE_GIGS.find((g) => g.id === id)
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let gig: any = sampleGig
+
+  if (!sampleGig) {
+    const [dbGig] = await db.select().from(gigs).where(eq(gigs.id, id)).limit(1)
+    if (!dbGig) notFound()
+    const [seller] = await db
+      .select({ name: users.name, username: users.username, cnicVerified: users.cnicVerified })
+      .from(users).where(eq(users.id, dbGig.sellerId)).limit(1)
+    gig = {
+      id: dbGig.id,
+      title: dbGig.title,
+      description: dbGig.description,
+      category: dbGig.category,
+      sellerName: seller?.name ?? 'Seller',
+      sellerUsername: seller?.username ?? '',
+      sellerAvatar: null,
+      cnicVerified: seller?.cnicVerified ?? false,
+      avgRating: Number(dbGig.avgRating ?? 0),
+      totalReviews: dbGig.totalReviews ?? 0,
+      tier1Price: dbGig.tier1Price,
+      tier2Price: dbGig.tier2Price ?? null,
+      tier3Price: dbGig.tier3Price ?? null,
+      tier1DeliveryDays: dbGig.tier1DeliveryDays,
+      images: [],
+      isSponsored: dbGig.isSponsored ?? false,
+    }
+  }
+
   if (!gig) notFound()
 
   const t = await getTranslations('gig')
