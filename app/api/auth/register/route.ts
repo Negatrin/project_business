@@ -11,6 +11,7 @@ const schema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   role: z.enum(['buyer', 'seller', 'both']),
+  cnic: z.string().optional(),
 })
 
 export async function POST(request: Request) {
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 })
     }
 
-    const { name, username, email, password, role } = parsed.data
+    const { name, username, email, password, role, cnic } = parsed.data
 
     // Check duplicates
     const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1)
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
     }
 
     const passwordHash = await bcrypt.hash(password, 12)
-    const [user] = await db.insert(users).values({ name, username, email, passwordHash, role }).returning({ id: users.id })
+    const [user] = await db.insert(users).values({ name, username, email, passwordHash, role, ...(cnic ? { cnicNumber: cnic } : {}) }).returning({ id: users.id })
 
     // Create wallet for the user
     await db.insert(wallets).values({ userId: user.id })

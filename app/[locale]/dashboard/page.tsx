@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ShoppingBag, CheckCircle, MessageSquare, DollarSign, ChevronRight, Clock } from 'lucide-react'
+import { ShoppingBag, CheckCircle, MessageSquare, DollarSign, ChevronRight, Clock, Search } from 'lucide-react'
 import Link from 'next/link'
 
 interface PageProps {
@@ -29,10 +29,10 @@ export default async function DashboardPage({ params: { locale } }: PageProps) {
   const to = await getTranslations('order')
 
   const stats = [
-    { label: t('activeOrders'), value: '2', icon: ShoppingBag, color: 'text-blue-500', bg: 'bg-blue-50' },
-    { label: t('completedOrders'), value: '14', icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-50' },
-    { label: t('pendingMessages'), value: '3', icon: MessageSquare, color: 'text-orange-500', bg: 'bg-orange-50' },
-    { label: t('totalSpent'), value: 'PKR 45,000', icon: DollarSign, color: 'text-purple-500', bg: 'bg-purple-50' },
+    { label: 'Total Spent', value: 'PKR 45,000', icon: DollarSign, color: 'text-purple-500', bg: 'bg-purple-50' },
+    { label: 'Projects Assigned', value: '17', icon: ShoppingBag, color: 'text-blue-500', bg: 'bg-blue-50' },
+    { label: 'Active Projects', value: '2', icon: Clock, color: 'text-orange-500', bg: 'bg-orange-50' },
+    { label: 'Completed', value: '14', icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-50' },
   ]
 
   return (
@@ -40,10 +40,13 @@ export default async function DashboardPage({ params: { locale } }: PageProps) {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
-          <p className="text-gray-500">Welcome back, <strong>{session.user.name}</strong></p>
+          <p className="text-gray-500 mt-0.5">Welcome back, <strong>{session.user.name}</strong></p>
         </div>
         <Link href={`/${locale}/search`}>
-          <Button>{t('browseGigs')}</Button>
+          <Button className="flex items-center gap-2">
+            <Search className="h-4 w-4" />
+            {t('browseGigs')}
+          </Button>
         </Link>
       </div>
 
@@ -57,6 +60,22 @@ export default async function DashboardPage({ params: { locale } }: PageProps) {
             <p className="text-2xl font-bold text-gray-900">{s.value}</p>
             <p className="text-sm text-gray-500">{s.label}</p>
           </Card>
+        ))}
+      </div>
+
+      {/* Quick actions */}
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[
+          { label: 'Find a Freelancer', href: `/${locale}/search`, color: 'bg-[#1dbf73] text-white hover:bg-[#19a864]' },
+          { label: 'My Orders', href: `/${locale}/orders`, color: 'bg-blue-50 text-blue-700 hover:bg-blue-100' },
+          { label: 'Messages', href: `/${locale}/inbox`, color: 'bg-purple-50 text-purple-700 hover:bg-purple-100' },
+          { label: 'Post a Request', href: `/${locale}/search`, color: 'bg-orange-50 text-orange-700 hover:bg-orange-100' },
+        ].map((a) => (
+          <Link key={a.label} href={a.href}>
+            <div className={`rounded-xl p-4 text-center text-sm font-semibold transition-colors cursor-pointer ${a.color}`}>
+              {a.label}
+            </div>
+          </Link>
         ))}
       </div>
 
@@ -114,6 +133,22 @@ export default async function DashboardPage({ params: { locale } }: PageProps) {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Inbox preview */}
+      <div className="mt-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-50">
+            <MessageSquare className="h-5 w-5 text-purple-500" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-900">You have 3 unread messages</p>
+            <p className="text-xs text-gray-500">Check your inbox to stay updated with your freelancers</p>
+          </div>
+        </div>
+        <Link href={`/${locale}/inbox`}>
+          <Button variant="outline" size="sm">Open Inbox</Button>
+        </Link>
       </div>
     </div>
   )

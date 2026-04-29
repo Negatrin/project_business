@@ -10,7 +10,7 @@ const notoNastaliq = Noto_Nastaliq_Urdu({
 })
 
 export const metadata: Metadata = {
-  title: 'Marketplace — Pakistan\'s Freelance Platform',
+  title: 'Jobez — Pakistan\'s Freelance Platform',
   description: 'Hire top Pakistani freelancers and pay in PKR. Find verified talent for web, design, writing, and more.',
   keywords: 'freelance, pakistan, pkr, fiverr alternative, urdu, hire, gig',
 }

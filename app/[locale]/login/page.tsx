@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useTranslations } from 'next-intl'
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
+import { getSession } from 'next-auth/react'
 
 export default function LoginPage() {
   const t = useTranslations('auth')
@@ -29,7 +30,13 @@ export default function LoginPage() {
     if (res?.error) {
       setError('Invalid email or password')
     } else {
-      router.push(`/${locale}/dashboard`)
+      const session = await getSession()
+      const role = (session?.user as { role?: string })?.role
+      if (role === 'seller' || role === 'both' || role === 'admin') {
+        router.push(`/${locale}/seller/dashboard`)
+      } else {
+        router.push(`/${locale}/dashboard`)
+      }
       router.refresh()
     }
   }
@@ -39,7 +46,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href={`/${locale}`} className="text-3xl font-extrabold text-[#1dbf73]">Marketplace</Link>
+          <Link href={`/${locale}`} className="text-3xl font-extrabold text-[#1dbf73]">Jobez</Link>
           <h1 className="mt-3 text-2xl font-bold text-gray-900">{t('loginTitle')}</h1>
           <p className="mt-1 text-gray-500">{t('loginSubtitle')}</p>
         </div>
@@ -95,7 +102,7 @@ export default function LoginPage() {
 
           {/* Demo credentials hint */}
           <div className="mt-4 rounded-lg bg-blue-50 p-3 text-xs text-blue-700">
-            <strong>Demo:</strong> demo@sensai.pk / password123
+            <strong>Demo:</strong> junaid@jobez.pk / password123 (buyer) · hassam@jobez.pk / password123 (seller)
           </div>
         </div>
 

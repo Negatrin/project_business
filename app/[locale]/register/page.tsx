@@ -5,8 +5,8 @@ import Link from 'next/link'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useTranslations } from 'next-intl'
-import { signIn } from 'next-auth/react'
-import { User, Mail, Lock, AtSign, Eye, EyeOff } from 'lucide-react'
+import { signIn, getSession } from 'next-auth/react'
+import { User, Mail, Lock, AtSign, Eye, EyeOff, CreditCard } from 'lucide-react'
 
 export default function RegisterPage() {
   const t = useTranslations('auth')
@@ -14,7 +14,7 @@ export default function RegisterPage() {
   const locale = params.locale as string
   const router = useRouter()
 
-  const [form, setForm] = useState({ name: '', username: '', email: '', password: '', confirmPassword: '', role: 'buyer' })
+  const [form, setForm] = useState({ name: '', username: '', email: '', password: '', confirmPassword: '', cnic: '', role: 'buyer' })
   const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -41,7 +41,13 @@ export default function RegisterPage() {
       return
     }
     await signIn('credentials', { email: form.email, password: form.password, redirect: false })
-    router.push(`/${locale}/dashboard`)
+    const session = await getSession()
+    const role = (session?.user as { role?: string })?.role
+    if (role === 'seller' || role === 'both' || role === 'admin') {
+      router.push(`/${locale}/seller/dashboard`)
+    } else {
+      router.push(`/${locale}/dashboard`)
+    }
     router.refresh()
   }
 
@@ -49,7 +55,7 @@ export default function RegisterPage() {
     <div className="flex min-h-[80vh] items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href={`/${locale}`} className="text-3xl font-extrabold text-[#1dbf73]">Marketplace</Link>
+          <Link href={`/${locale}`} className="text-3xl font-extrabold text-[#1dbf73]">Jobez</Link>
           <h1 className="mt-3 text-2xl font-bold text-gray-900">{t('registerTitle')}</h1>
           <p className="mt-1 text-gray-500">{t('registerSubtitle')}</p>
         </div>
@@ -71,6 +77,15 @@ export default function RegisterPage() {
               </button>
             </div>
             <Input label={t('confirmPassword')} type="password" value={form.confirmPassword} onChange={(e) => update('confirmPassword', e.target.value)} required icon={<Lock className="h-4 w-4" />} />
+
+            <Input
+              label="CNIC Number (e.g. 42101-1234567-1)"
+              type="text"
+              value={form.cnic}
+              onChange={(e) => update('cnic', e.target.value.replace(/[^0-9-]/g, ''))}
+              placeholder="XXXXX-XXXXXXX-X"
+              icon={<CreditCard className="h-4 w-4" />}
+            />
 
             {/* Role selection */}
             <div>

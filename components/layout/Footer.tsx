@@ -13,7 +13,7 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <span className="text-2xl font-extrabold text-[#1dbf73]">Marketplace</span>
+            <span className="text-2xl font-extrabold text-[#1dbf73]">Jobez</span>
             <p className="mt-2 text-sm text-gray-500">{t('tagline')}</p>
             <p className="mt-4 text-xs text-gray-400">🇵🇰 {t('madeIn')}</p>
           </div>
@@ -58,7 +58,7 @@ export function Footer() {
 
         <div className="mt-10 border-t border-gray-200 pt-6 flex flex-col items-center justify-between gap-3 sm:flex-row">
           <p className="text-xs text-gray-400">
-            © {new Date().getFullYear()} SensAi. {t('allRights')}.
+            © {new Date().getFullYear()} Jobez. {t('allRights')}.
           </p>
           <div className="flex items-center gap-4 text-xs text-gray-400">
             <span>🔒 Secure Payments</span>

@@ -58,14 +58,6 @@ export default async function HomePage({ params: { locale } }: PageProps) {
             ))}
           </div>
 
-          {/* Stats */}
-          <div className="mt-10 grid grid-cols-3 gap-4">
-            {(['freelancers', 'categories', 'clients'] as const).map((key) => (
-              <div key={key}>
-                <p className="text-xl font-bold text-[#1dbf73]">{th(`stats.${key}`)}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
